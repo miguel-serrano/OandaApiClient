@@ -8,6 +8,7 @@
 <body>
 
 <?php
+$time_start=microtime(true);
 include(dirname( dirname (__FILE__))."/config.php");
 include(dirname( dirname (__FILE__))."/class_lib.php");
 
@@ -15,14 +16,14 @@ include(dirname( dirname (__FILE__))."/class_lib.php");
 $oanda = new oandaApi(TOKEN_OANDA , ACCOUNT_NUMBER , "real");
 
 
-$instruments=array("EUR_USD","USD_CHF");
+$instruments=array("EUR_USD","USD_CHF", "GBP_USD");
 $instrument = "EUR_USD";
 $count=5;
 $timeFrame="H1";
 $candleFormat = "midpoint";
 
 
-$what=3;
+$what=1;
 
 switch ($what) {
 	case 1 : $return=$oanda->getCurrentPrices($instruments); break;
@@ -34,7 +35,8 @@ echo "<pre>";
 print_r($return);
 echo "</pre>";
 
-
+$time_end=microtime(true);
+echo "<p>duration : ".($time_end-$time_start)." seconds</p>"
 ?>
 </body>
 </html>
