@@ -24,7 +24,7 @@ class oandaApi{
 		$this->debug=$debug;
 	}
 
-	/*
+	/*	
 	 *	get instrument list
 	 *	http://developer.oanda.com/docs/v1/rates/#get-an-instrument-list
 	 */
@@ -59,7 +59,68 @@ class oandaApi{
 		
 		return $this->sendGetRequest($parameters,$url);
 	}
-	
+
+	/*
+	 *	get accounts for a user
+	 *	http://developer.oanda.com/docs/v1/accounts/#get-accounts-for-a-user
+	 */
+	function getAccounts($username)
+	{
+		$url="accounts";
+		$parameters=array("username"=>$username);
+		
+		return $this->sendGetRequest($parameters,$url);
+	}
+
+	/*
+	 *	get account information
+	 *	http://developer.oanda.com/docs/v1/accounts/#get-account-information
+	 */
+	function getAccountInformation($idAccount)
+	{
+		$url="accounts/".$idAccount;
+		$parameters=array();
+		
+		return $this->sendGetRequest($parameters,$url);
+	}
+
+	/*
+	 *	get orders for an account
+	 *	http://developer.oanda.com/docs/v1/orders/#get-orders-for-an-account
+	 */
+	function getOrders($idAccount, $maxId = "", $count = 50, $instrument = "")
+	{
+		$url="accounts/".$idAccount."/orders";
+		$parameters=array("maxId"=>$maxId, "count"=>$count, "instrument"=>$instrument);
+		
+		return $this->sendGetRequest($parameters,$url);
+	}
+
+	/*
+	 *	create a new order
+	 *	http://developer.oanda.com/docs/v1/orders/#create-a-new-order
+	 */
+	function createOrder($idAccount, $instrument, $units, $side, $type, $expiry, $price, $lowerBound, $upperBound, $stopLoss, $takeProfit, $trailingStop)
+	{
+		$url="accounts/".$idAccount."/orders";
+		$parameters=array(	"instrument"=>$instrument,
+							"units"=>$units,
+							"side"=>$side,
+							"type"=>$type,
+							"expiry"=>$expiry,
+							"price"=>$price,
+							"lowerBound"=>$lowerBound,
+							"upperBound"=>$upperBound,
+							"stopLoss"=>$stopLoss,
+							"takeProfit"=>$takeProfit,
+							"trailingStop"=>$trailingStop
+							);
+		
+		return $this->sendPostRequest("POST",$parameters,$url);
+	}
+	/*
+	 *	send a GET request
+	 */	
 	private function sendGetRequest($parameters, $url) {
 		
 		$param=http_build_query($parameters);
@@ -90,7 +151,7 @@ class oandaApi{
 		$responseHeader = $this->handleHeader($http_response_header);
 		
 		switch ($responseHeader["statusCode"]) {
-			case 200: 	$memcache->set($key , array('ETag'=>$responseHeader['ETag'], 'response'=>$response) , NULL , 10);
+			case 200: 	$memcache->set($key , array('ETag'=>$responseHeader['ETag'], 'response'=>$response) , NULL , 60*60);
 						break;
 			case 304: 	$response=$eTag['response'];
 						break;
@@ -103,7 +164,39 @@ class oandaApi{
 		
 		return $response;
 	}
+
+	/*
+	 *	send a POST, PATCH or DELETE request
+	 */	
+	private function sendPostRequest($method, $parameters, $url) {
+		
+		$param=http_build_query($parameters);
+		$requestUrl=oandaApi::$apiUrls[$this->environment].$url;
+		
+		$opts = array(
+	 		'http'=>array(
+				'method'=>	$method,
+				'header'=>	"Authorization: Bearer ".$this->token."\r\n" .
+							"Accept-Encoding: gzip, deflate\r\n".
+							"Content-Type:  application/x-www-form-urlencoded\r\n",
+				'content'=> $param
+		  	)
+		);
+		$context = stream_context_create($opts);
+		$response = file_get_contents($requestUrl,false,$context);
+		$responseHeader = $this->handleHeader($http_response_header);
+
+		$this->debugLog($eTagHeader);
+		$this->debugLog($key);
+		$this->debugLog($requestUrl);
+		$this->debugLog($responseHeader);
+		
+		return $response;
+	}
 	
+	/*
+	 *	handle the HTTP header
+	 */	
 	private function handleHeader($headers) {
 		$return=array();
 		foreach ($headers as $key=>$header) {
@@ -117,12 +210,9 @@ class oandaApi{
 		return $return;
 	}
 	
-	private function getMemcache($key) {
-	}
-	
-	private function setMemcache($key) {
-	}
-	
+	/*
+	 *	Debug
+	 */		
 	private function debugLog($str){
 		if ($this->debug) {
 			if (is_array($str)) {
