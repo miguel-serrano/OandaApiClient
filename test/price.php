@@ -13,17 +13,17 @@ include(dirname( dirname (__FILE__))."/config.php");
 include(dirname( dirname (__FILE__))."/class_lib.php");
 
 
-$oanda = new oandaApi(TOKEN_OANDA , ACCOUNT_NUMBER , "real");
+$oanda = new oandaApi(TOKEN_OANDA , ACCOUNT_NUMBER , ACCOUNT_TYPE, true);
 
-
+$return="";
 $instruments=array("EUR_USD","USD_CHF", "GBP_USD");
 $instrument = "EUR_USD";
-$count=5;
+$count=3;
 $timeFrame="H1";
 $candleFormat = "midpoint";
 
 
-$what=1;
+$what=(isset($_GET['i']) ? $_GET['i'] : 1);
 
 switch ($what) {
 	case 1 : $return=$oanda->getCurrentPrices($instruments); break;
@@ -36,7 +36,13 @@ print_r($return);
 echo "</pre>";
 
 $time_end=microtime(true);
-echo "<p>duration : ".($time_end-$time_start)." seconds</p>"
+echo "<p>duration : ".($time_end-$time_start)." seconds</p>";
 ?>
+
+<ul>
+	<li><a href="?i=1"><?php echo "getCurrentPrices($instruments)"; ?></a></li>
+    <li><a href="?i=2"><?php echo "getInstrumentList($instruments)"; ?></a></li>
+    <li><a href="?i=3"><?php echo "getHistoricalPrices($instrument, $timeFrame, $count, $candleFormat)"; ?></a></li>
+</ul>
 </body>
 </html>
