@@ -10,7 +10,8 @@ class oandaApi{
 	private $environment;
 	private $token;
 	private $debug;
-	 
+
+	public $accountId;	 
 	/*
 	 *	
 	 *	$environment = "sandbox" OR "practice" OR "real"
@@ -22,6 +23,9 @@ class oandaApi{
 		$this->debug=$debug;
 	}
 
+	function setAccountId($accountId){
+		$this->accountId=$accountId;
+	}
 	/***********************************************************************
 	 *	rates
 	 ***********************************************************************/	
@@ -29,11 +33,11 @@ class oandaApi{
 	 *	get instrument list
 	 *	http://developer.oanda.com/docs/v1/rates/#get-an-instrument-list
 	 */
-	function getInstrumentList($idAccount, $instruments=array())
+	function getInstrumentList($instruments=array())
 	{
 		$url="instruments";
 		$parameters=array();
-		$parameters["accountId"]=$idAccount;
+		$parameters["accountId"]=$this->accountId;
 		if (count($instruments)!=0) {$parameters["instruments"]=implode(",",$instruments);}
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -86,9 +90,9 @@ class oandaApi{
 	 *	get account information
 	 *	http://developer.oanda.com/docs/v1/accounts/#get-account-information
 	 */
-	function getAccountInformation($idAccount)
+	function getAccount()
 	{
-		$url="accounts/".$idAccount;
+		$url="accounts/".$this->accountId;
 		$parameters=array();
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -101,9 +105,9 @@ class oandaApi{
 	 *	get orders for an account
 	 *	http://developer.oanda.com/docs/v1/orders/#get-orders-for-an-account
 	 */
-	function getOrders($idAccount, $count = NULL, $instrument = NULL, $maxId = NULL)
+	function getOrders($count = NULL, $instrument = NULL, $maxId = NULL)
 	{
-		$url="accounts/".$idAccount."/orders";
+		$url="accounts/".$this->accountId."/orders";
 		$parameters=array();
 		if (!is_null($count)) 		{$parameters["count"]=$count;}		
 		if (!is_null($instrument))	{$parameters["instrument"]=$instrument;}		
@@ -116,9 +120,9 @@ class oandaApi{
 	 *	create a new order
 	 *	http://developer.oanda.com/docs/v1/orders/#create-a-new-order
 	 */
-	function createOrder($idAccount, $instrument, $units, $side, $type, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
+	function createOrder($instrument, $units, $side, $type, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
 	{
-		$url="accounts/".$idAccount."/orders";
+		$url="accounts/".$this->accountId."/orders";
 		$parameters=array();
 		$parameters["instrument"]=$instrument;
 		$parameters["units"]=$units;
@@ -139,9 +143,9 @@ class oandaApi{
 	 *	get information for an order
 	 *	http://developer.oanda.com/docs/v1/orders/#get-information-for-an-order
 	 */
-	function getInformationOrder($idAccount, $idOrder)
+	function getOrder($idOrder)
 	{
-		$url="accounts/".$idAccount."/orders/".$idOrder;
+		$url="accounts/".$this->accountId."/orders/".$idOrder;
 		$parameters=array();
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -151,9 +155,9 @@ class oandaApi{
 	 *	modify an existing order
 	 *	http://developer.oanda.com/docs/v1/orders/#modify-an-existing-order
 	 */
-	function modifyOrder($idAccount, $idOrder, $units=NULL, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
+	function modifyOrder($idOrder, $units=NULL, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
 	{
-		$url="accounts/".$idAccount."/orders/".$idOrder;
+		$url="accounts/".$this->accountId."/orders/".$idOrder;
 		$parameters=array(	"units"=>$units,
 							"expiry"=>$expiry,
 							"price"=>$price,
@@ -181,9 +185,9 @@ class oandaApi{
 	 *	Close an order
 	 *	http://developer.oanda.com/docs/v1/orders/#close-an-order
 	 */
-	function deleteOrder($idAccount, $idOrder)
+	function deleteOrder($idOrder)
 	{
-		$url="accounts/".$idAccount."/orders/".$idOrder;
+		$url="accounts/".$this->accountId."/orders/".$idOrder;
 		$parameters=array();
 		
 		return $this->sendRequest("DELETE",$parameters,$url);
@@ -196,9 +200,9 @@ class oandaApi{
 	 *	get a list of open trades
 	 *	http://developer.oanda.com/docs/v1/trades/#get-a-list-of-open-trades
 	 */
-	function getTrades($idAccount, $count = NULL, $instrument = NULL, $maxId = NULL)
+	function getTrades($count = NULL, $instrument = NULL, $maxId = NULL)
 	{
-		$url="accounts/".$idAccount."/trades";
+		$url="accounts/".$this->accountId."/trades";
 		$parameters=array();
 		if (!is_null($count)) 		{$parameters["count"]=$count;}
 		if (!is_null($instrument)) 	{$parameters["instrument"]=$instrument;}
@@ -211,9 +215,9 @@ class oandaApi{
 	 *	get information on a specific trade
 	 *	http://developer.oanda.com/docs/v1/trades/#get-information-on-a-specific-trade
 	 */
-	function getInformationTrade($idAccount, $idTrade)
+	function getTrade($idTrade)
 	{
-		$url="accounts/".$idAccount."/trades/".$idTrade;
+		$url="accounts/".$this->accountId."/trades/".$idTrade;
 		$parameters=array();
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -223,9 +227,9 @@ class oandaApi{
 	 *	modify an existing trade
 	 *	http://developer.oanda.com/docs/v1/trades/#modify-an-existing-trade
 	 */
-	function modifyTrade($idAccount, $idTrade, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
+	function modifyTrade($idTrade, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
 	{
-		$url="accounts/".$idAccount."/trades/".$idTrade;
+		$url="accounts/".$this->accountId."/trades/".$idTrade;
 		$parameters=array();
 		if (!is_null($stopLoss)) 	 {$parameters["stopLoss"]=$stopLoss;}
 		if (!is_null($takeProfit)) 	 {$parameters["takeProfit"]=$takeProfit;}
@@ -238,9 +242,9 @@ class oandaApi{
 	 *	close an open trade
 	 *	http://developer.oanda.com/docs/v1/trades/#close-an-open-trade
 	 */
-	function closeTrade($idAccount, $idTrade)
+	function closeTrade($idTrade)
 	{
-		$url="accounts/".$idAccount."/trades/".$idTrade;
+		$url="accounts/".$this->accountId."/trades/".$idTrade;
 		$parameters=array();
 		
 		return $this->sendRequest("DELETE",$parameters,$url);
@@ -253,9 +257,9 @@ class oandaApi{
 	 *	get a list of all open positions
 	 *	http://developer.oanda.com/docs/v1/positions/#get-a-list-of-all-open-positions
 	 */
-	function getPositions($idAccount)
+	function getPositions()
 	{
-		$url="accounts/".$idAccount."/positions";
+		$url="accounts/".$this->accountId."/positions";
 		$parameters=array();
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -265,9 +269,9 @@ class oandaApi{
 	 *	get the position for an instrument
 	 *	http://developer.oanda.com/docs/v1/positions/#get-the-position-for-an-instrument
 	 */
-	function getPosition($idAccount, $instrument)
+	function getPosition($instrument)
 	{
-		$url="accounts/".$idAccount."/positions/".$instrument;
+		$url="accounts/".$this->accountId."/positions/".$instrument;
 		$parameters=array();
 		
 		return $this->sendRequest("GET",$parameters,$url);
@@ -277,14 +281,57 @@ class oandaApi{
 	 *	close an existing position
 	 *	http://developer.oanda.com/docs/v1/positions/#close-an-existing-position
 	 */
-	function closePosition($idAccount, $instrument)
+	function closePosition($instrument)
 	{
-		$url="accounts/".$idAccount."/positions/".$instrument;
+		$url="accounts/".$this->accountId."/positions/".$instrument;
 		$parameters=array();
 		
 		return $this->sendRequest("DELETE",$parameters,$url);
 	}
 
+	/***********************************************************************
+	 *	Transactions
+	 ***********************************************************************/	
+	/*
+	 *	get transaction history
+	 *	http://developer.oanda.com/docs/v1/transactions/#get-transaction-history
+	 */
+	function getTransactions($count = NULL, $instrument = NULL, $maxId = NULL, $minId = NULL, $ids = NULL)
+	{
+		$url="accounts/".$this->accountId."/transactions";
+		$parameters=array();
+		if (!is_null($count)) 		{$parameters["count"]=$count;}
+		if (!is_null($instrument)) 	{$parameters["instrument"]=$instrument;}
+		if (!is_null($maxId)) 		{$parameters["maxId"]=$maxId;}
+		if (!is_null($minId)) 		{$parameters["minId"]=$minId;}
+		if (!is_null($ids)) 		{$parameters["ids"]=$ids;}
+		
+		return $this->sendRequest("GET",$parameters,$url);
+	}
+
+	/*
+	 *	get information for a transaction
+	 *	http://developer.oanda.com/docs/v1/transactions/#get-information-for-a-transaction
+	 */
+	function getTransaction($idTransaction)
+	{
+		$url="accounts/".$this->accountId."/transactions/".$idTransaction;
+		$parameters=array();
+		
+		return $this->sendRequest("GET",$parameters,$url);
+	}
+
+	/*
+	 *	get full account history
+	 *	http://developer.oanda.com/docs/v1/transactions/#get-full-account-history
+	 */
+	function getAllTransactions()
+	{
+		$url="accounts/".$this->accountId."/alltransactions";
+		$parameters=array();
+		
+		return $this->sendRequest("GET",$parameters,$url);
+	}
 
 	/***********************************************************************
 	 *	send a request
