@@ -1,4 +1,14 @@
 <?php
+/**
+ * 
+ * @Author : Arnaud Jeulin [Email:arnaud.jeulin@gmail.com]; 
+ * @Filename class.oandaApi.php;
+ */
+
+/**
+ * class oandaApi
+ * 
+ */
 
 class oandaApi{
 	static $apiUrls = array(
@@ -120,7 +130,7 @@ class oandaApi{
 	 *	create a new order
 	 *	http://developer.oanda.com/docs/v1/orders/#create-a-new-order
 	 */
-	function createOrder($instrument, $units, $side, $type, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
+	function createOrder($instrument, $units, $side, $type, $expiry=NULL, $price=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL, $lowerBound=NULL, $upperBound=NULL)
 	{
 		$url="accounts/".$this->accountId."/orders";
 		$parameters=array();
@@ -130,11 +140,11 @@ class oandaApi{
 		$parameters["type"]=$type;
 		if (!is_null($expiry)) 		{$parameters["expiry"]=$expiry;}
 		if (!is_null($price)) 		{$parameters["price"]=$price;}
-		if (!is_null($lowerBound)) 	{$parameters["lowerBound"]=$lowerBound;}
-		if (!is_null($upperBound)) 	{$parameters["upperBound"]=$upperBound;}
 		if (!is_null($stopLoss)) 	{$parameters["stopLoss"]=$stopLoss;}
 		if (!is_null($takeProfit)) 	{$parameters["takeProfit"]=$takeProfit;}
 		if (!is_null($trailingStop)){$parameters["trailingStop"]=$trailingStop;}
+		if (!is_null($lowerBound)) 	{$parameters["lowerBound"]=$lowerBound;}
+		if (!is_null($upperBound)) 	{$parameters["upperBound"]=$upperBound;}
 		
 		return $this->sendRequest("POST",$parameters,$url);
 	}
@@ -155,28 +165,18 @@ class oandaApi{
 	 *	modify an existing order
 	 *	http://developer.oanda.com/docs/v1/orders/#modify-an-existing-order
 	 */
-	function modifyOrder($idOrder, $units=NULL, $expiry=NULL, $price=NULL, $lowerBound=NULL, $upperBound=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL)
+	function modifyOrder($idOrder, $units=NULL, $expiry=NULL, $price=NULL, $stopLoss=NULL, $takeProfit=NULL, $trailingStop=NULL, $lowerBound=NULL, $upperBound=NULL)
 	{
 		$url="accounts/".$this->accountId."/orders/".$idOrder;
-		$parameters=array(	"units"=>$units,
-							"expiry"=>$expiry,
-							"price"=>$price,
-							"lowerBound"=>$lowerBound,
-							"upperBound"=>$upperBound,
-							"stopLoss"=>$stopLoss,
-							"takeProfit"=>$takeProfit,
-							"trailingStop"=>$trailingStop
-							);
-
 		$parameters=array();
 		if (!is_null($units)) 		{$parameters["units"]=$units;}
 		if (!is_null($expiry)) 		{$parameters["expiry"]=$expiry;}
 		if (!is_null($price)) 		{$parameters["price"]=$price;}
-		if (!is_null($lowerBound)) 	{$parameters["lowerBound"]=$lowerBound;}
-		if (!is_null($upperBound)) 	{$parameters["upperBound"]=$upperBound;}
 		if (!is_null($stopLoss)) 	{$parameters["stopLoss"]=$stopLoss;}
 		if (!is_null($takeProfit)) 	{$parameters["takeProfit"]=$takeProfit;}
 		if (!is_null($trailingStop)){$parameters["trailingStop"]=$trailingStop;}
+		if (!is_null($lowerBound)) 	{$parameters["lowerBound"]=$lowerBound;}
+		if (!is_null($upperBound)) 	{$parameters["upperBound"]=$upperBound;}
 		
 		return $this->sendRequest("PATCH",$parameters,$url);
 	}

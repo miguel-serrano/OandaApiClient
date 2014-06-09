@@ -10,7 +10,7 @@
 <?php
 $time_start=microtime(true);
 include(dirname( dirname (__FILE__))."/config.php");
-include(dirname( dirname (__FILE__))."/class_lib.php");
+include(dirname( dirname (__FILE__))."/class.oandaApi.php");
 
 
 $oanda = new oandaApi(TOKEN_OANDA , ACCOUNT_TYPE, true);
@@ -29,7 +29,7 @@ $units=2;
 $side="sell";
 $type1="limit";
 $type2="market";
-$expiry=gmdate("Y-m-d\TH:i:sP", strtotime("+ 1 hour"));
+$expiry=gmdate("Y-m-d\TH:i:s\Z", strtotime("+ 1 hour"));
 $price=1.500;
 $price2=1.5001;
 $lowerBound=$price*.999;
@@ -53,7 +53,7 @@ switch ($what) {
 	case 11: $return=$oanda->getAccount(); break;
 
 	case 20: $return=$oanda->getOrders($count, $instrument, $maxId); break;
-	case 21: $return=$oanda->createOrder($instrument, $units, $side, $type1, $expiry, $price, $lowerBound, $upperBound, $stopLoss, $takeProfit, $trailingStop); break; 
+	case 21: $return=$oanda->createOrder($instrument, $units, $side, $type1, $expiry, $price, $stopLoss, $takeProfit, $trailingStop, $lowerBound, $upperBound); break; 
 	case 22: $return=$oanda->createOrder($instrument, $units, $side, $type2); break; 
 	case 23: $return=$oanda->getOrder($idOrder); break; 
 	case 24: $return=$oanda->modifyOrder($idOrder, NULL, NULL, $price2); break;
@@ -96,7 +96,7 @@ echo "<p>duration : ".($time_end-$time_start)." seconds</p>";
 <h2>Orders</h2>
 <ul>
 	<li><a href="?i=20"><?php echo "getOrders($count, $instrument, $maxId)"; ?></a></li>
-    <li>LIMIT <a href="?i=21"><?php echo "createOrder($instrument, $units, $side, $type1, $expiry, $price, $lowerBound, $upperBound, $stopLoss, $takeProfit, $trailingStop)"; ?></a></li>
+    <li>LIMIT <a href="?i=21"><?php echo "createOrder($instrument, $units, $side, $type1, $expiry, $price, $stopLoss, $takeProfit, $trailingStop, $lowerBound, $upperBound)"; ?></a></li>
     <li>MARKET <a href="?i=22"><?php echo "createOrder($instrument, $units, $side, $type2)"; ?></a></li>
     <li><a href="?i=23"><?php echo "getOrder($idOrder)"; ?></a></li>
     <li><a href="?i=24"><?php echo "modifyOrder($idOrder, NULL, NULL, $price2)"; ?></a></li>
