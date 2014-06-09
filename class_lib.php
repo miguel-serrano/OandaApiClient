@@ -265,7 +265,7 @@ class oandaApi{
 	 *	get the position for an instrument
 	 *	http://developer.oanda.com/docs/v1/positions/#get-the-position-for-an-instrument
 	 */
-	function getPositions($idAccount, $instrument)
+	function getPosition($idAccount, $instrument)
 	{
 		$url="accounts/".$idAccount."/positions/".$instrument;
 		$parameters=array();
@@ -277,7 +277,7 @@ class oandaApi{
 	 *	close an existing position
 	 *	http://developer.oanda.com/docs/v1/positions/#close-an-existing-position
 	 */
-	function getPositions($idAccount, $instrument)
+	function closePosition($idAccount, $instrument)
 	{
 		$url="accounts/".$idAccount."/positions/".$instrument;
 		$parameters=array();
