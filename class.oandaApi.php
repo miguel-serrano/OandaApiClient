@@ -362,8 +362,8 @@ class oandaApi{
 				'method'=>	$method,
 				'content'=> $content,
 				'header'=>	"Authorization: Bearer ".$this->token."\r\n" .
-							"Accept-Encoding: gzip, deflate\r\n".
 							"Content-Type:  application/x-www-form-urlencoded\r\n".
+							"Accept: application/json".
 							$eTagHeader
 		  	)
 		);
